@@ -800,9 +800,9 @@ bool AMDGPUOperand::isInlinableImm(MVT type) const {
       return AMDGPU::isInlinableLiteral64(Imm.Val, AsmParser->isVI());
     } else { // Expected 32-bit operand
       bool lost;
-      APFloat FPLiteral(APFloat::IEEEdouble, Literal);
+      APFloat FPLiteral(APFloat::IEEEdouble(), Literal);
       // Convert literal to single precision
-      APFloat::opStatus status = FPLiteral.convert(APFloat::IEEEsingle,
+      APFloat::opStatus status = FPLiteral.convert(APFloat::IEEEsingle(),
                                                     APFloat::rmNearestTiesToEven,
                                                     &lost);
       // We allow precision lost but not overflow or underflow
@@ -847,9 +847,9 @@ bool AMDGPUOperand::isLiteralImm(MVT type) const {
       return false;
     } else { // Expected 32-bit operand
       bool lost;
-      APFloat FPLiteral(APFloat::IEEEdouble, Literal);
+      APFloat FPLiteral(APFloat::IEEEdouble(), Literal);
       // Convert literal to single precision
-      APFloat::opStatus status = FPLiteral.convert(APFloat::IEEEsingle,
+      APFloat::opStatus status = FPLiteral.convert(APFloat::IEEEsingle(),
                                                     APFloat::rmNearestTiesToEven,
                                                     &lost);
       // We allow precision lost but not overflow or underflow
@@ -931,9 +931,9 @@ void AMDGPUOperand::addLiteralImmOperand(MCInst &Inst, int64_t Val) const {
       }
     } else { // Expected 32-bit operand
       bool lost;
-      APFloat FPLiteral(APFloat::IEEEdouble, Literal);
+      APFloat FPLiteral(APFloat::IEEEdouble(), Literal);
       // Convert literal to single precision
-      FPLiteral.convert(APFloat::IEEEsingle, APFloat::rmNearestTiesToEven, &lost);
+      FPLiteral.convert(APFloat::IEEEsingle(), APFloat::rmNearestTiesToEven, &lost);
       // We allow precision lost but not overflow or underflow. This should be
       // checked earlier in isLiteralImm()
       Inst.addOperand(MCOperand::createImm(FPLiteral.bitcastToAPInt().getZExtValue()));
@@ -960,8 +960,8 @@ void AMDGPUOperand::addKImmFP32Operands(MCInst &Inst, unsigned N) const {
   APInt Literal(64, Imm.Val);
   if (Imm.IsFPImm) { // We got fp literal
     bool lost;
-    APFloat FPLiteral(APFloat::IEEEdouble, Literal);
-    FPLiteral.convert(APFloat::IEEEsingle, APFloat::rmNearestTiesToEven, &lost);
+    APFloat FPLiteral(APFloat::IEEEdouble(), Literal);
+    FPLiteral.convert(APFloat::IEEEsingle(), APFloat::rmNearestTiesToEven, &lost);
     Inst.addOperand(MCOperand::createImm(FPLiteral.bitcastToAPInt().getZExtValue()));
   } else { // We got int literal token
     Inst.addOperand(MCOperand::createImm(Literal.getLoBits(32).getZExtValue()));
